@@ -21,7 +21,7 @@ def signup():
         flash('Username already exists. Please choose another one.', 'danger')
         return redirect(url_for('index'))
     else:
-        hashed_password = generate_password_hash(password, method='sha256')
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
         users[username] = {'email': email, 'password': hashed_password}
         flash('Signup successful!', 'success')
         session['username'] = username
