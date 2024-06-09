@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
@@ -14,15 +14,30 @@ def index():
 @app.route('/signup', methods=['POST'])
 def signup():
     username = request.form['username']
+    email = request.form['email']
     password = request.form['password']
 
     if username in users:
         flash('Username already exists. Please choose another one.', 'danger')
+        return redirect(url_for('index'))
     else:
-        users[username] = generate_password_hash(password)
+        hashed_password = generate_password_hash(password, method='sha256')
+        users[username] = {'email': email, 'password': hashed_password}
         flash('Signup successful!', 'success')
+        session['username'] = username
+        return redirect(url_for('welcome'))
     
-    return redirect(url_for('index'))
+@app.route('/welcome')
+def welcome():
+    if 'username' in session:
+        username = session['username']
+        return render_template('welcome.html', username=username)
+    else:
+        return redirect(url_for('index'))
+    
+@app.route('/users')
+def users_list():
+    return render_template('users.html, users=users')
 
 if __name__ == '__main__':
     app.run(debug=True)
