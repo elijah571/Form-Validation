@@ -37,7 +37,7 @@ def welcome():
     
 @app.route('/users')
 def users_list():
-    return render_template('users.html, users=users')
+    return render_template('users.html', users=users)
 
 if __name__ == '__main__':
     app.run(debug=True)
